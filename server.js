@@ -59,12 +59,6 @@ const promptUser = UserData => {
             case "Add Employees":
                 addEmp();
                 break;
-            case "Update Department":
-                upDepart();
-                break;
-            case "Update Roles":
-                upRole();
-                break;
             case "Update Employees":
                 upEmp();
                 break;
@@ -198,112 +192,148 @@ function addRole() {
 };
 
 //function if user selects ADD employees option
-function addEmp() {    
+function addEmp() {
     return inquirer.prompt([
-    {
-        type: "input",
-        name: "newEmpFirstName",
-        message: "Enter the FIRST NAME of the EMPLOYEE you would like to add:",
-        validate: titleInput => {
-            if (titleInput) {
-                return true;
-            } else {
-                console.log("Please enter a response");
-                return false;
-            }
-        }
-    },
-    {
-        type: "input",
-        name: "newEmpLastName",
-        message: "Enter the LAST NAME of the EMPLOYEE you would like to add:",
-        validate: titleInput => {
-            if (titleInput) {
-                return true;
-            } else {
-                console.log("Please enter a response");
-                return false;
-            }
-        }
-    },
-    {
-        type: "number",
-        name: "newEmpRoleID",
-        message: "Enter the ROLE ID associated with the EMPLOYEE you would like to add:",
-        validate: titleInput => {
-            if (titleInput) {
-                return true;
-            } else {
-                console.log("Please enter a response");
-                return false;
-            }
-        }
-    },
-    {
-        type: "number",
-        name: "newEmpManagerID",
-        message: "Enter the Manager ID associated with the EMPLOYEE you would like to add:",
-        validate: titleInput => {
-            if (titleInput) {
-                return true;
-            } else {
-                console.log("Please enter a response");
-                return false;
-            }
-        }
-    }
-
-]).then(function (answer) {
-    db.query(`INSERT INTO employees SET ?`,
         {
-            first_name: answer.newEmpFirstName,
-            last_name: answer.newEmpLastName,
-            role_id: answer.newEmpRoleID,
-            manager_id: answer.newEmpManagerID
+            type: "input",
+            name: "newEmpFirstName",
+            message: "Enter the FIRST NAME of the EMPLOYEE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
         },
-        function (err) {
-            if (err) throw err;
-            console.log(`
+        {
+            type: "input",
+            name: "newEmpLastName",
+            message: "Enter the LAST NAME of the EMPLOYEE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        },
+        {
+            type: "number",
+            name: "newEmpRoleID",
+            message: "Enter the ROLE ID associated with the EMPLOYEE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        },
+        {
+            type: "number",
+            name: "newEmpManagerID",
+            message: "Enter the Manager ID associated with the EMPLOYEE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        }
+
+    ]).then(function (answer) {
+        db.query(`INSERT INTO employees SET ?`,
+            {
+                first_name: answer.newEmpFirstName,
+                last_name: answer.newEmpLastName,
+                role_id: answer.newEmpRoleID,
+                manager_id: answer.newEmpManagerID
+            },
+            function (err) {
+                if (err) throw err;
+                console.log(`
             ${answer.newRole} has been added to Roles
             `)
-            promptUser();
-        }
-    )
-})
-};
-
-//function if user selects UPDATE department option
-function upDepart() {
-};
-
-//function if user selects UPDATE roles option
-function upRole() {
+                promptUser();
+            }
+        )
+    })
 };
 
 //function if user selects UPDATE employees option
 function upEmp() {
-};
+    db.query(`SELECT * FROM employees`,
+        function (err, results) {
+            if (err) throw err;
+            inquirer.prompt([
+                {
+                    type: "rawlist",
+                    name: "upEmpChoice",
+                    choices: function () {
+                        let upEmpChoiceArr = [];
+                        for (i = 0; i < results.length; i++) {
+                            upEmpChoiceArr.push(results[i].last_name);
+                        }
+                        return upEmpChoiceArr;
+                    },
+                    message: "Which EMPLOYEE would you like to update?"
+                }
+            ])
+                .then(function (answer) {
+                    const upEmpName = answer.choice;
+                    db.query(`SELECT * from employees`,
+                        function (err, results) {
+                            if (err) throw err;
+                            inquirer.prompt([
+                                {
+                                    type: "number",
+                                    name: "upEmpRoleID",
+                                    message: "Enter the UPDATED ROLE ID associated with the EMPLOYEE:",
+                                    validate: titleInput => {
+                                        if (titleInput) {
+                                            return true;
+                                        } else {
+                                            console.log("Please enter a response");
+                                            return false;
+                                        }
+                                    }
+                                }
+                            ]).then(function (answer) {
+                                console.log(answer);
+                                console.log(upEmpName);
+                                db.query(`UPDATE employees SET ? WHERE last_name = ?`,
+                                    [
+                                        {
+                                            role_id: answer.upEmpRoleID,
+                                        }, upEmpName
+                                    ],
+                                ),
+                                    console.log(`
+                                Employee Updated
+                                `);
+
+                                promptUser()
+                            });
+                        })
+                })
+
+        })
+}
 
 //Function to initialize app
 function init() {
     //start promptUser to get information about the Employee Tables
     promptUser()
-    //then get the UserDAta and send it to fuctions to updates Employee tables function
-    // .then(userData => {
-    //     return tableNewEdits(userData);
-    // });
 };
 
 //function call to initialize app
 init();
-
-// //GET a single candidate
-// db.query(`SELECT * FROM employee WHERE id=1`, (err, row) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(row);
-// });
 
 //GET route that's not supported by the app (Not Found)
 app.use((req, res) => {
