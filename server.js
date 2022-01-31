@@ -24,6 +24,11 @@ const db = mysql.createConnection(
 
 //array of questions for user input
 const promptUser = UserData => {
+    console.log("|-------------------------------------|");
+    console.log("|-------------------------------------|");
+    console.log("|-----Welcome to Employee Tracker-----|");
+    console.log("|-------------------------------------|");
+    console.log("|-------------------------------------|");
     return inquirer.prompt([
         {
             type: "list",
@@ -73,7 +78,7 @@ const promptUser = UserData => {
     });
 };
 
-//function if user selects a view department option
+//function if user selects VIEW department option
 function viewDepart() {
     db.query(`SELECT name, id FROM departments`, (err, rows) => {
         console.table(rows);
@@ -81,20 +86,110 @@ function viewDepart() {
     promptUser()
 };
 
-//function if user selects a view role option
+//function if user selects VIEW role option
 function viewRole() {
     db.query(`SELECT * FROM roles
     LEFT JOIN departments ON roles.department_id = departments.id`, (err, rows) => {
         console.table(rows);
     });
+    promptUser()
 };
 
-//function if user selects a view employees option
+//function if user selects VIEW employees option
+//need to add managers
 function viewEmp() {
-    db.query(`SELECT id AS EmployeeID, first_name AS First Name, last_name AS Last Name  FROM employees
+    db.query(`SELECT * FROM employees
+    LEFT JOIN roles ON employees.role_id = roles.id
     LEFT JOIN departments ON roles.department_id = departments.id`, (err, rows) => {
         console.table(rows);
     });
+    promptUser()
+};
+
+//function if user selects ADD department option
+function addDepart() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "newDepart",
+            message: "Enter the DEPARTMENT NAME you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        }
+    ]).then(function (answer) {
+        db.query(`INSERT INTO departments VALUES (DEFAULT, ?)`,
+            [answer.newDepart],
+            function (err) {
+                if (err) throw err;
+                console.log(answer.newDepart + " has been added to Departments")
+                promptUser();
+            }
+        )
+    })
+};
+
+//function if user selects ADD roles option
+function addRole() {
+    return inquirer.prompt([
+        {
+            type: "input",
+            name: "newRole",
+            message: "Enter the ROLE TITLE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        }
+        {
+            type: "input",
+            name: "newRoleSalary",
+            message: "Enter the SALARY for the ROLE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        }
+
+    ]).then(function (answer) {
+        db.query(`INSERT INTO departments VALUES (DEFAULT, ?)`,
+            [answer.newDepart],
+            function (err) {
+                if (err) throw err;
+                console.log(answer.newDepart + " has been added to Departments")
+                promptUser();
+            }
+        )
+    })
+};
+
+//function if user selects ADD employees option
+function addEmp() {
+};
+
+//function if user selects UPDATE department option
+function upDepart() {
+};
+
+//function if user selects UPDATE roles option
+function upRole() {
+};
+
+//function if user selects UPDATE employees option
+function upEmp() {
 };
 
 //Function to initialize app

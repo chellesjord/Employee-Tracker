@@ -1,6 +1,7 @@
-DROP TABLE IF EXISTS department;
-DROP TABLE IF EXISTS role;
+DROP TABLE IF EXISTS departments;
+DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS managers;
 
 CREATE TABLE departments (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -20,4 +21,10 @@ CREATE TABLE employees (
     last_name VARCHAR(30), 
     role_id INTEGER, 
     manager_id INTEGER 
-)
+);
+
+CREATE TABLE managers (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(30),
+    last_name VARCHAR(30)
+);

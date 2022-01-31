@@ -24,3 +24,9 @@ VALUES
 ('Dora','Carrington', 3, 0),
 ('Edward','Bellamy', 4, 1),
 ('Unica','Zurn', 4, 0);
+
+INSERT INTO managers (first_name, last_name)
+VALUES
+('Natasha', 'Romanoff'),
+('Bucky', 'Barnes'),
+('Wanda', 'Maximoff');
