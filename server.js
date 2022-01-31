@@ -24,11 +24,11 @@ const db = mysql.createConnection(
 
 //array of questions for user input
 const promptUser = UserData => {
-    console.log("|-------------------------------------|");
-    console.log("|-------------------------------------|");
-    console.log("|-----Welcome to Employee Tracker-----|");
-    console.log("|-------------------------------------|");
-    console.log("|-------------------------------------|");
+    console.log(`
+    |-------------------------------------|
+    |-----Welcome to Employee Tracker-----|
+    |-------------------------------------|
+    `);
     return inquirer.prompt([
         {
             type: "list",
@@ -127,7 +127,9 @@ function addDepart() {
             [answer.newDepart],
             function (err) {
                 if (err) throw err;
-                console.log(answer.newDepart + " has been added to Departments")
+                console.log(`
+                ${answer.newDepart} has been added to Departments
+                `)
                 promptUser();
             }
         )
@@ -149,11 +151,24 @@ function addRole() {
                     return false;
                 }
             }
-        }
+        },
         {
-            type: "input",
+            type: "number",
             name: "newRoleSalary",
             message: "Enter the SALARY for the ROLE you would like to add:",
+            validate: titleInput => {
+                if (titleInput) {
+                    return true;
+                } else {
+                    console.log("Please enter a response");
+                    return false;
+                }
+            }
+        },
+        {
+            type: "number",
+            name: "newRoleDeptID",
+            message: "Enter the DEPARTMENT ID associated with the ROLE you would like to add:",
             validate: titleInput => {
                 if (titleInput) {
                     return true;
@@ -165,11 +180,17 @@ function addRole() {
         }
 
     ]).then(function (answer) {
-        db.query(`INSERT INTO departments VALUES (DEFAULT, ?)`,
-            [answer.newDepart],
+        db.query(`INSERT INTO roles SET ?`,
+            {
+                title: answer.newRole,
+                salary: answer.newRoleSalary,
+                department_id: answer.newRoleDeptID
+            },
             function (err) {
                 if (err) throw err;
-                console.log(answer.newDepart + " has been added to Departments")
+                console.log(`
+                ${answer.newRole} has been added to Roles
+                `)
                 promptUser();
             }
         )
@@ -177,7 +198,78 @@ function addRole() {
 };
 
 //function if user selects ADD employees option
-function addEmp() {
+function addEmp() {    
+    return inquirer.prompt([
+    {
+        type: "input",
+        name: "newEmpFirstName",
+        message: "Enter the FIRST NAME of the EMPLOYEE you would like to add:",
+        validate: titleInput => {
+            if (titleInput) {
+                return true;
+            } else {
+                console.log("Please enter a response");
+                return false;
+            }
+        }
+    },
+    {
+        type: "input",
+        name: "newEmpLastName",
+        message: "Enter the LAST NAME of the EMPLOYEE you would like to add:",
+        validate: titleInput => {
+            if (titleInput) {
+                return true;
+            } else {
+                console.log("Please enter a response");
+                return false;
+            }
+        }
+    },
+    {
+        type: "number",
+        name: "newEmpRoleID",
+        message: "Enter the ROLE ID associated with the EMPLOYEE you would like to add:",
+        validate: titleInput => {
+            if (titleInput) {
+                return true;
+            } else {
+                console.log("Please enter a response");
+                return false;
+            }
+        }
+    },
+    {
+        type: "number",
+        name: "newEmpManagerID",
+        message: "Enter the Manager ID associated with the EMPLOYEE you would like to add:",
+        validate: titleInput => {
+            if (titleInput) {
+                return true;
+            } else {
+                console.log("Please enter a response");
+                return false;
+            }
+        }
+    }
+
+]).then(function (answer) {
+    db.query(`INSERT INTO employees SET ?`,
+        {
+            first_name: answer.newEmpFirstName,
+            last_name: answer.newEmpLastName,
+            role_id: answer.newEmpRoleID,
+            manager_id: answer.newEmpManagerID
+        },
+        function (err) {
+            if (err) throw err;
+            console.log(`
+            ${answer.newRole} has been added to Roles
+            `)
+            promptUser();
+        }
+    )
+})
 };
 
 //function if user selects UPDATE department option
