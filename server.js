@@ -35,8 +35,7 @@ const promptUser = UserData => {
             name: "taskOptVAU",
             message: `What action would you like to take?`,
             choices: ["View Departments", "View Roles", "View Employees",
-                "Add Department", "Add Roles", "Add Employees",
-                "Update Department", "Update Roles", "Update Employees", "EXIT"]
+                "Add Department", "Add Roles", "Add Employees","Update Employees", "EXIT"]
         }
     ]).then(function (res) {
         //switch case statements to help sort which funtion to go to depending on which selection the user chooses.
