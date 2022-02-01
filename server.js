@@ -73,7 +73,7 @@ const promptUser = UserData => {
 
 //function if user selects VIEW department option
 function viewDepart() {
-    db.query(`SELECT name, id FROM departments`, (err, rows) => {
+    db.query(`SELECT name AS "Department Name", id AS "Department ID" FROM departments`, (err, rows) => {
         console.table(rows);
     });
     promptUser()
@@ -81,7 +81,7 @@ function viewDepart() {
 
 //function if user selects VIEW role option
 function viewRole() {
-    db.query(`SELECT * FROM roles
+    db.query(`SELECT roles.title AS "Job Title", roles.id AS "Role ID", departments.name AS "Department" FROM roles
     LEFT JOIN departments ON roles.department_id = departments.id`, (err, rows) => {
         console.table(rows);
     });
@@ -89,11 +89,18 @@ function viewRole() {
 };
 
 //function if user selects VIEW employees option
-//need to add managers
 function viewEmp() {
-    db.query(`SELECT * FROM employees
+    db.query(`SELECT employees.id AS "Employee ID",
+    employees.first_name AS "First Name",
+    employees.last_name AS "Last Name",
+    roles.title AS "Job Title",
+    departments.name AS "Department",
+    roles.salary AS "Salary",
+    managers.first_name AS "Manager First Name",
+    managers.last_name AS "Manager Last Name" FROM employees
     LEFT JOIN roles ON employees.role_id = roles.id
-    LEFT JOIN departments ON roles.department_id = departments.id`, (err, rows) => {
+    LEFT JOIN departments ON roles.department_id = departments.id
+    LEFT JOIN managers ON employees.manager_id = managers.id`, (err, rows) => {
         console.table(rows);
     });
     promptUser()
@@ -277,15 +284,15 @@ function upEmp() {
                     choices: function () {
                         let upEmpChoiceArr = [];
                         for (i = 0; i < results.length; i++) {
-                            upEmpChoiceArr.push(results[i].last_name);
+                            upEmpChoiceArr.push(results[i].id);
                         }
                         return upEmpChoiceArr;
                     },
-                    message: "Which EMPLOYEE would you like to update?"
+                    message: "Select and ID associated with the EMPLOYEE would you like to update?"
                 }
             ])
                 .then(function (answer) {
-                    const upEmpName = answer.choice;
+                    const upEmpID = answer.upEmpChoice;
                     db.query(`SELECT * from employees`,
                         function (err, results) {
                             if (err) throw err;
@@ -305,12 +312,12 @@ function upEmp() {
                                 }
                             ]).then(function (answer) {
                                 console.log(answer);
-                                console.log(upEmpName);
-                                db.query(`UPDATE employees SET ? WHERE last_name = ?`,
+                                console.log(upEmpID);
+                                db.query(`UPDATE employees SET ? WHERE id = ?`,
                                     [
                                         {
                                             role_id: answer.upEmpRoleID,
-                                        }, upEmpName
+                                        }, upEmpameID
                                     ],
                                 ),
                                     console.log(`
