@@ -1,4 +1,8 @@
  # Employee-Tracker 
+ 
+GitHub Link: https://github.com/chellesjord/Employee-Tracker
+
+Deployed: This is deployed on the computer. To see this application in action, watch the video below or pull the code to try it on your own.
 
   ## Description:
   The user is able to view Employees, Job Roles, Departments, and mode via node on the terminal. The user can also add more Employees, Departments, and Roles as needed. Finally, the user can update the Employee as needed with the otpions to change varying as the user needs. 
